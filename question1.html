@@ -37,11 +37,10 @@
             }
 
             function getCountryName (obj) {
-            	for (var i = 0, len = obj.length; i < len; i++) {
+            	for (var i = 0; i < obj.length; i++) {
                     // console.log( obj[i].name + ': ' + obj[i].capital);
-                    
                     printCountryName(obj[i].name, obj[i].capital, obj[i].borders);
-                    compareCountries(obj ,obj[i].borders);
+                    // compareCountries(obj, obj[i].borders);
                 }
             }
 
@@ -49,12 +48,12 @@
             	var countryBordersArray = countryBorders;
             	var countryListArray = countryList;
             	// console.log(countryBordersArray);
-            	// console.log(countryListArray[0].name);
+            	// console.log(countryListArray);
             	for (i = 0; i < countryListArray.length; i++){
             		for (j = 0; j < countryBordersArray.length; j++){
             			if (countryBordersArray[j] == countryListArray[i].alpha3Code) {
-            				//Error here: printing out matches twice
-            				console.log(countryListArray[i].name );
+            				//Error here: printing out matches twice since we're looping through all the countries in the getCountryName function
+            				// console.log(countryListArray[i].name + "#" + i + "," + j);
             				printBorderInfo(countryListArray[i].name, countryListArray[i].capital, countryListArray[i].population);
             			}
             		}
@@ -97,39 +96,45 @@
                     results.appendChild(div_country);
             }
 
-            //Do I still need this?
+            //Better alternative to createCountryHashMap
             function createCountryHashMap (obj) {
             	var countryHashMap = {};
-            	for (i = 0; i < obj.length-1; i++) {
+            	for (i = 0; i < obj.length; i++) {
             		var value = obj[i];
                     var key = obj[i].alpha3Code;  
 
                     //add to countryHashMap
                     countryHashMap[key] = value;
-                    // console.log(countryHashMap[key].alpha3Code);
                     
+                    getNeighboringCountries (countryHashMap[key]);
             	}
-            	getNeighboringCountries (countryHashMap[key]);
-
             }
 
-            //Do I still need this? Created borderCountriesArray above
+            //Using createCountryHashMap to find border countries
             function getNeighboringCountries (countryHashMap) {
             	var countryListArray = countryHashMap;
             	var countryBorders = [ ]; 
-                    for (var j = 0; j < countryHashMap.borders.length; j++) {
-                        //add border countries to countryBorders array
-                        countryBorders.push(countryHashMap.borders[j]);
-                    }; 
-
-                    for (var i = 0; i < countryBorders.length; i++) {
-                    	if ( countryBorders[i] == countryListArray.alpha3Code) {
-                    		console.log(countryListArray.name);
-                    	}
-                    }
-                // console.log(countryBorders);    
+                for (var j = 0; j < countryHashMap.borders.length; j++) {
+                    //add border countries to countryBorders array
+                    countryBorders.push(countryHashMap.borders[j]);
+                }; 
+                // console.log(countryHashMap.name + ":" + countryBorders);
+                getBorderInfo(countryHashMap, countryBorders);
             }
 
+            //must now find info for each border country
+            function getBorderInfo (countryHashMap, countryBorders) {
+            	// console.log(countryHashMap);
+            	for (var alpha3Code in countryHashMap) {
+            		for (var i = 0; i < countryBorders.length; i++) {
+            			if (countryHashMap.alpha3Code == countryBorders[i]) {
+            				console.log(countryHashMap.alpha3Code + ":" + countryBorders[i]);
+            			}
+            			
+            		}
+            		
+            	}
+            }
             
 
         })
