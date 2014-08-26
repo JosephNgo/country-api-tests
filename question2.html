@@ -1,0 +1,168 @@
+
+        
+
+
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script>
+    	// Print all countries which have a population lesser than all neighouring countries.
+        // 1st loop: Get country and all neighboring countries 
+        // 2nd loop: if country is less then all neighboring countries, print country
+
+        // Print all countries which have a population lower than a user provided input
+
+        // For every country print the neighboring countres' info: name, capital and the population
+        // wait for the page to be parsed
+        document.addEventListener('DOMContentLoaded', function(){
+
+        	// register an event handler on the button
+        	document.body.firstElementChild.addEventListener('click', function(){
+        		makeAjaxCall('http://uitr.herokuapp.com/countries');
+        	})
+
+        	function makeAjaxCall (url) {
+                // Make an AJAX call to get country info as JSON
+
+                // create an XMLHttpRequest object
+                // open it up
+                // register an event listener for readystatechange
+                // send/fire the request
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', url);
+                xhr.addEventListener('readystatechange', function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var obj = JSON.parse(xhr.responseText);
+                     	//get the name of every country
+                     	getCountryName(obj);
+                     	//get the neighboring countries
+                     	// createCountryHashMap(obj);
+                     	//get neighboring countries' names, capitals, populations
+                    }
+                });
+                xhr.send();
+            }
+
+            function getCountryName (obj) {
+            	for (var i = 0, len = obj.length; i < len; i++) {
+                    // console.log( obj[i].name + ': ' + obj[i].capital);
+                    
+                    // printCountryName(obj[i].name, obj[i].capital, obj[i].borders);
+                    compareCountries(obj ,obj[i].borders);
+                }
+            }
+
+            function compareCountries (countryList, countryBorders) {
+            	var countryBordersArray = countryBorders;
+            	var countryListArray = countryList;
+            	// console.log(countryBordersArray);
+            	// console.log(countryListArray[0].name);
+            	for (i = 0; i < countryListArray.length-1; i++){
+            		for (j = 0; j < countryBordersArray.length-1; j++){
+            			if ( countryListArray[i].population >= countryBordersArray[j] ) {
+            				//Error here: printing out matches twice
+            				console.log("match: " + countryListArray[i].name );
+            				printBorderInfo(countryListArray[i].name, countryListArray[i].capital, countryListArray[i].population);
+            			}
+            		}
+            	}
+            }
+
+            //find country and append border country name, capital and population
+            function printBorderInfo (borderName, borderCapital, borderPopulation) {
+            		//div for the country
+                    var div_country = document.createElement('div');
+                    div_country.style.className = 'country'; 
+
+            		//span for border country info
+            		var span_country_name = document.createElement('span');
+            		span_country_name.innerHTML = borderName + ", Capital: " + borderCapital + ", Population: " + borderPopulation;
+
+
+            		//append the spans to the coutry div
+            		div_country.appendChild(span_country_name);
+
+            		// append the country div to the results div
+                    results.appendChild(div_country);
+            }
+
+            function printCountryName (name, capital, neighboringCountries) {
+            		// console.log(country + " : " + capital);
+            		//div for the country
+                    var div_country = document.createElement('div');
+                    div_country.style.className = 'country';
+
+                    // span for the country name
+                    var span_country_name = document.createElement('span');
+                    span_country_name.innerHTML = name;
+                    span_country_name.className = 'name';
+
+                    // append the spans to the country div
+                    div_country.appendChild(span_country_name);
+
+                    // append the country div to the results div
+                    results.appendChild(div_country);
+            }
+
+            //Do I still need this?
+            function createCountryHashMap (obj) {
+            	var countryHashMap = {};
+            	for (i = 0; i < obj.length-1; i++) {
+            		var value = obj[i];
+                    var key = obj[i].alpha3code;  
+
+                    //add to countryHashMap
+                    countryHashMap[key] = value;
+
+                    getNeighboringCountries (countryHashMap[key]);
+            	}
+            }
+
+            //Do I still need this? Created borderCountriesArray above
+            function getNeighboringCountries (countryHashMap) {
+            	var countryBorders = [ ]; 
+                    for (var j = 0; j < countryHashMap.borders.length; j++) {
+                        //add border countries to countryBorders array
+                        countryBorders.push(countryHashMap.borders[j]);
+                    };      
+            }
+
+            
+
+        })
+    </script>
+
+    <style>
+        body {
+            font: 200 1em 'Helvetica Neue';
+            padding: 3em;
+        }
+        div.country {
+            background-color: #eee;
+            padding: 0.15em;
+            margin: 0.15em;
+            float: left;
+        }
+        span.name {
+            font: 200 1.2em 'Helvetica Neue';
+            display: inline-block;
+            padding: 2em 0em 0em 0em;
+        }
+        span.capital {
+            font: 200 0.85em 'Helvetica Neue';
+            background-color: #aaa;
+            display: inline-block;
+            border-radius: 0.15em;
+            padding: 0.25em 0.5em;
+        }
+    </style>
+</head>
+<body>
+	<button>Get info on countries</button>
+    <div id="results">
+    </div>
+</body>
+</html>
